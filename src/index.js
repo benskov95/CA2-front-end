@@ -1,13 +1,15 @@
 import "./style.css"
 import "bootstrap/dist/css/bootstrap.css"
-import "./jokeFacade"
-import jokeFacade from "./jokeFacade"
+import personFacade from "./personFacade"
+import zipFacade from "./zipFacade"
 
-
+getAll();
 function getAll() {
+    let displayArray;
     personFacade.getAllPersons()
     .then(persons => {
-        const personRows = persons.map(person => `
+        const personRows = persons.map(person =>  
+        `
         <tr>
         <td>${person.firstName}</td>
         <td>${person.lastName}</td>
@@ -15,13 +17,24 @@ function getAll() {
         <td>${person.street}</td>
         <td>${person.city}</td>
         <td>${person.zipCode}</td>
-        <td>${person.hobbies}</td>
-        <td>${person.phoneNumbers}</td>
-        </tr>
+        <td>${displayArray = person.hobbies.map(hobby => hobby.name).join(", ")}</td>
+        <td>${displayArray = person.phoneNumbers.map(phone => phone.number).join(", ")}</td>
         `);
+        
         const rowsAsString = personRows.join("");
-        document.getElementById("tbody").innerHTML = personRows;
+        document.getElementById("tbody").innerHTML = rowsAsString;
     });
+}
+
+function getPersonByPhone(phone) {
+    personFacade.getPersonByPhone(phone)
+    .then(person => {
+        // show person
+    })
+    .catch (e => {
+        // add element to show error
+        printError(e, x);
+    })
 }
 
 function addPerson(person) {
@@ -40,6 +53,18 @@ function deletePerson(id) {
     personFacade.deletePerson(id)
     .then(person => {
         // add message with person details
+        getAll();
+    })
+    .catch(e => {
+        // add element to show error
+        printError(e, x);
+    })
+}
+
+function editPerson(person) {
+    personFacade.editPerson(person)
+    .then(editedPerson => {
+        // add message
         getAll();
     })
     .catch(e => {
