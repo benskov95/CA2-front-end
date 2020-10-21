@@ -4,6 +4,7 @@ const URL = "https://bencat.dk/bornit-ca2/api/persons"
 const personFacade = {
 
     getAllPersons,
+    getPersonByPhone,
 
 
 }
@@ -13,6 +14,13 @@ function getAllPersons (){
     return fetch(URL, options)
     .then(handleHttpErrors)
     
+}
+
+function getPersonByPhone (phone){
+    const options = makeOptions("GET")
+    return fetch(URL+"/phone/"+phone)
+    .then(handleHttpErrors)
+
 }
 
 
