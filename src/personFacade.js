@@ -1,4 +1,4 @@
-const URL = "https://bencat.dk/bornit-ca2/api/persons"
+const URL = "https://bencat.dk/bornit-ca2/api/persons/"
 
 
 const personFacade = {
@@ -27,27 +27,27 @@ function getAllPersons (){
 
 function getPersonByPhone (phone){
     const options = makeOptions("GET")
-    return fetch(URL+"/phone/"+phone)
+    return fetch(URL+"phone/"+phone)
     .then(handleHttpErrors)
 
 }
 
 function getHobbyCount(hobby){
     const options = makeOptions("GET")
-    return fetch(URL+"/count/"+hobby)
+    return fetch(URL+"count/"+hobby)
     .then(handleHttpErrors)
 
 }
 
 function getPersonsWithGivenHobby(hobby){
     const options = makeOptions("GET")
-    return fetch(URL+"/hobby/"+hobby)
+    return fetch(URL+"hobby/"+hobby)
     .then(handleHttpErrors)
 }
 
 function getPersonsFromGivenCity(city){
     const options = makeOptions("GET")
-    return fetch(URL+"/city/"+city)
+    return fetch(URL+"city/"+city)
     .then(handleHttpErrors)
 
 }
@@ -61,28 +61,27 @@ function addPerson (person){
 
 function deletePerson(id){
     const options = makeOptions("DELETE")
-    return fetch(URL+id)
+    return fetch(URL+id, options)
     .then(handleHttpErrors)
 
 }
 
 function getAllHobbies () {
     const options = makeOptions("GET")
-    return fetch(URL+"/hobbies")
+    return fetch(URL+"hobbies")
     .then(handleHttpErrors)
     
 }
 
 function getPersonById(id){
     const options = makeOptions("GET")
-    return fetch(URL+"/id/"+id)
+    return fetch(URL+"id/"+id)
     .then(handleHttpErrors)
-
 }
 
 function editPerson (person, id) {
     const options = makeOptions("PUT", person)
-    return fetch(URL+id)
+    return fetch(URL+id, options)
     .then(handleHttpErrors)
 }
 
