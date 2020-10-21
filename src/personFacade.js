@@ -11,7 +11,8 @@ const personFacade = {
     addPerson,
     deletePerson,
     getAllHobbies,
-    getPersonById
+    getPersonById,
+    editPerson
 
 
 
@@ -78,6 +79,13 @@ function getPersonById(id){
     .then(handleHttpErrors)
 
 }
+
+function editPerson (person, id) {
+    const options = makeOptions("PUT", person)
+    return fetch(URL+id)
+    .then(handleHttpErrors)
+}
+
 
 
 
