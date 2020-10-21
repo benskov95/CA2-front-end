@@ -6,6 +6,8 @@ const personFacade = {
     getAllPersons,
     getPersonByPhone,
     getHobbyCount,
+    getPersonsWithGivenHobby,
+
 
 
 }
@@ -29,6 +31,12 @@ function getHobbyCount(hobby){
     return fetch(URL+"/count/"+hobby)
     .then(handleHttpErrors)
 
+}
+
+function getPersonsWithGivenHobby(hobby){
+    const options = makeOptions("GET")
+    return fetch(URL+"/hobby/"+hobby)
+    .then(handleHttpErrors)
 }
 
 
