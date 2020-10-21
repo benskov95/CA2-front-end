@@ -35,9 +35,9 @@ document.getElementById("hobby").addEventListener("click", getPersonsWithGivenHo
 function getPersonsWithGivenHobby() {
     let hobby = input.value;
     personFacade.getPersonsWithGivenHobby(hobby)
-    .then(person => {
+    .then(persons => {
         getHobbyCount(hobby);
-        createPersonTable(person);
+        createPersonTable(persons);
     })
     .catch (e => {
         status.style.color = "red";
@@ -51,6 +51,19 @@ function getHobbyCount(input) {
     .then(amount => {
         status.style.color = "green";
         status.innerText = `There are ${amount.count} people with '${input}' as a hobby.`;
+    })
+}
+
+document.getElementById("city").addEventListener("click", getPersonsFromGivenCity);
+function getPersonsFromGivenCity() {
+    personFacade.getPersonsFromGivenCity(input.value)
+    .then(persons => {
+        createPersonTable(persons);
+    })
+    .catch (e => {
+        status.style.color = "red";
+        printError(e, status)
+        removeStatusText(status, 10000);
     })
 }
 
@@ -69,7 +82,11 @@ function addPerson(person) {
     });
 }
 
-document.getElementById("tbody").addEventListener("click", deletePerson);
+document.getElementById("tbody").addEventListener("click", function(e) {
+    if (e.target.id === "delete") {
+        deletePerson(e);
+    }
+});
 
 function deletePerson(e) {
     let id = e.target.value;
@@ -80,8 +97,8 @@ function deletePerson(e) {
         removeStatusText(status, 10000);
         getAll();
     })
-    .catch(e => {
-        printError(e, status);
+    .catch(err => {
+        printError(err, status);
         removeStatusText(status, 10000);
     })
 }
@@ -134,7 +151,7 @@ function createPersonTable(data) {
         <td>${person.zipCode}</td>
         <td>${displayArray = person.hobbies.map(hobby => hobby.name).join(", ")}</td>
         <td>${displayArray = person.phoneNumbers.map(phone => phone.number).join(", ")}</td>
-        <td><button id="delete" value="${data.id}" class="btn btn-danger">Delete</button></td>
+        <td><button id="delete" value="${person.id}" class="btn btn-danger">Delete</button></td>
         `;
     }
 }
