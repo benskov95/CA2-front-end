@@ -11,6 +11,7 @@ const personFacade = {
     addPerson,
     deletePerson,
     getAllHobbies,
+    getPersonById
 
 
 
@@ -69,7 +70,14 @@ function getAllHobbies () {
     return fetch(URL+"/hobbies")
     .then(handleHttpErrors)
     
-  }
+}
+
+function getPersonById(id){
+    const options = makeOptions("GET")
+    return fetch(URL+"/id/"+id)
+    .then(handleHttpErrors)
+
+}
 
 
 
