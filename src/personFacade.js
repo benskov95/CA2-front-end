@@ -9,6 +9,7 @@ const personFacade = {
     getPersonsWithGivenHobby,
     getPersonsFromGivenCity,
     addPerson,
+    deletePerson,
 
 
 
@@ -53,7 +54,13 @@ function addPerson (person){
     return fetch(URL)
     .then(handleHttpErrors)
 
+}
 
+function deletePerson(id){
+    const options = makeOptions("DELETE")
+    return fetch(URL+id)
+    .then(handleHttpErrors)
+    
 }
 
 
