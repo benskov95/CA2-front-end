@@ -26,14 +26,18 @@ function getAll() {
     });
 }
 
-function getPersonByPhone(phone) {
+document.getElementById("test").addEventListener("click", getPersonByPhone);
+
+function getPersonByPhone() {
+    let phone = document.getElementById("testInput").value;
+    let la = document.getElementById("getget");
     personFacade.getPersonByPhone(phone)
     .then(person => {
-        // show person
+        la.innerText = person.firstName;
     })
     .catch (e => {
         // add element to show error
-        printError(e, x);
+        printError(e, la);
     })
 }
 
