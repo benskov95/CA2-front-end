@@ -1,4 +1,5 @@
 import "./style.css"
+import "bootstrap"
 import "bootstrap/dist/css/bootstrap.css"
 import personFacade from "./personFacade"
 import zipFacade from "./zipFacade"
@@ -26,22 +27,38 @@ function getAll() {
     });
 }
 
-document.getElementById("test").addEventListener("click", getPersonByPhone);
+document.getElementById("phone").addEventListener("click", getPersonByPhone);
 
 function getPersonByPhone() {
-    let phone = document.getElementById("testInput").value;
-    let la = document.getElementById("getget");
+    let phone = document.getElementById("searchword").value;
+    let displayArray;
+    let phoneError = document.getElementById("error")
     personFacade.getPersonByPhone(phone)
     .then(person => {
-        la.innerText = person.firstName;
+        const personRows =  
+            `
+            <tr>
+            <td>${person.firstName}</td>
+            <td>${person.lastName}</td>
+            <td>${person.email}</td>
+            <td>${person.street}</td>
+            <td>${person.city}</td>
+            <td>${person.zipCode}</td>
+            <td>${displayArray = person.hobbies.map(hobby => hobby.name).join(", ")}</td>
+            <td>${displayArray = person.phoneNumbers.map(phone => phone.number).join(", ")}</td>
+            `;
+            document.getElementById("tbody").innerHTML = personRows;
     })
     .catch (e => {
         // add element to show error
-        printError(e, la);
+        printError(e, phoneError)
     })
 }
 
+document.getElementById("addPerson").addEventListener("click", addPerson)
+
 function addPerson(person) {
+
     personFacade.addPerson(person)
     .then(newPerson => {
         // show message
