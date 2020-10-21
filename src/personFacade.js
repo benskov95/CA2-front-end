@@ -8,6 +8,7 @@ const personFacade = {
     getHobbyCount,
     getPersonsWithGivenHobby,
     getPersonsFromGivenCity,
+    addPerson,
 
 
 
@@ -44,6 +45,14 @@ function getPersonsFromGivenCity(city){
     const options = makeOptions("GET")
     return fetch(URL+"/city/"+city)
     .then(handleHttpErrors)
+
+}
+
+function addPerson (person){
+    const options = makeOptions("POST",person)
+    return fetch(URL)
+    .then(handleHttpErrors)
+
 
 }
 
