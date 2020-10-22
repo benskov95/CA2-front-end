@@ -28,6 +28,7 @@ $(document).ready(function() {
 
 getAll();
 getAllZipCodes();
+getAllHobbies();
 
 function getAll() {
     personFacade.getAllPersons()
@@ -185,10 +186,8 @@ function createPersonTable(data) {
         `;
     }
 }
-getAllHobbies()
+
 function getAllHobbies(){
-
-
   personFacade.getAllHobbies()
   .then(hobbies => {
       let hobbyOptions = hobbies.map(hobby => {
@@ -196,8 +195,4 @@ function getAllHobbies(){
       })
 
     })
-    
-  
-  
-
 }
