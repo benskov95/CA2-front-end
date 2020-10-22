@@ -10,6 +10,7 @@ import zipFacade from "./zipFacade"
 
 let status = document.getElementById("status");
 let input = document.getElementById("searchword");
+let cityArray = [];
 document.getElementById("refresh").addEventListener("click", getAll);
 
 $(document).ready(function() {
@@ -18,10 +19,17 @@ $(document).ready(function() {
       width : "100%",
       allowClear: true
     });
+    $('.city').select2({
+        placeholder : "Enter city name or ZIP code.",
+        width: "100%",
+        allowClear: true
+    });
 });
 
-
 getAll();
+getAllZipCodes();
+getAllHobbies();
+
 function getAll() {
     personFacade.getAllPersons()
     .then(persons => {
@@ -83,7 +91,6 @@ function getPersonsFromGivenCity() {
 document.getElementById("addPerson").addEventListener("click", addPerson)
 
 function addPerson(person) {
-
     personFacade.addPerson(person)
     .then(newPerson => {
         // show message
@@ -128,6 +135,17 @@ function editPerson(person) {
     })
 }
 
+function getAllZipCodes() {
+    let string;
+    zipFacade.getAllZipcodes()
+    .then(cities => {
+        cities.forEach(city => {
+          document.getElementById("cities").innerHTML += 
+          `<option value="${city.city}">${city.zipCode} ${city.city}</option>`;
+        })
+    })
+}
+
 function printError(promise, element) {
      promise.fullError.then(function(error) {
          element.innerText = `${error.code} : ${error.message}`;
@@ -167,4 +185,14 @@ function createPersonTable(data) {
         <td><button id="delete" value="${person.id}" class="btn btn-danger">Delete</button></td>
         `;
     }
+}
+
+function getAllHobbies(){
+  personFacade.getAllHobbies()
+  .then(hobbies => {
+      let hobbyOptions = hobbies.map(hobby => {
+        document.getElementById("hobbies").innerHTML += `<option value="${hobby.name}">${hobby.name}</option>`  
+      })
+
+    })
 }
