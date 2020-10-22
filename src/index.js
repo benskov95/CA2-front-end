@@ -185,3 +185,19 @@ function createPersonTable(data) {
         `;
     }
 }
+getAllHobbies()
+function getAllHobbies(){
+
+
+  personFacade.getAllHobbies()
+  .then(hobbies => {
+      let hobbyOptions = hobbies.map(hobby => {
+        document.getElementById("hobbies").innerHTML += `<option value="${hobby.name}">${hobby.name}</option>`  
+      })
+
+    })
+    
+  
+  
+
+}
