@@ -103,8 +103,12 @@ function addPerson(person) {
 }
 
 document.getElementById("tbody").addEventListener("click", function(e) {
-    if (e.target.id === "delete") {
-        deletePerson(e);
+    switch(e.target.id) {
+        case "delete":
+            deletePerson(e);
+            break;
+        case "edit": 
+            editPerson(e);
     }
 });
 
@@ -123,7 +127,15 @@ function deletePerson(e) {
     })
 }
 
-function editPerson(person) {
+function getPerson(e) {
+    personFacade.getPersonById(e.target.value)
+    .then(person => {
+
+    })
+}
+
+function editPerson(e) {
+
     personFacade.editPerson(person)
     .then(editedPerson => {
         // add message
@@ -182,7 +194,8 @@ function createPersonTable(data) {
         <td>${person.zipCode}</td>
         <td>${displayArray = person.hobbies.map(hobby => hobby.name).join(", ")}</td>
         <td>${displayArray = person.phoneNumbers.map(phone => phone.number).join(", ")}</td>
-        <td><button id="delete" value="${person.id}" class="btn btn-danger">Delete</button></td>
+        <td><button id="edit" value="${person.id}" class="btn btn-warning">Edit</button></td>
+        <td><button id="delete" value="${person.id}" class="btn btn-danger" data-toggle="modal" data-target="#editModal">Delete</button></td>
         `;
     }
 }
