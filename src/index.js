@@ -10,7 +10,6 @@ import zipFacade from "./zipFacade"
 
 let status = document.getElementById("status");
 let input = document.getElementById("searchword");
-let cityArray = [];
 document.getElementById("refresh").addEventListener("click", getAll);
 document.getElementById("add").addEventListener("click", addPerson);
 
@@ -111,7 +110,6 @@ function addPerson() {
     //   }
 
     let phone = [{
-      
       number : formElements.namedItem("phone").value,
       description : "Work"
   }]
@@ -144,8 +142,13 @@ function addPerson() {
 }
 
 document.getElementById("tbody").addEventListener("click", function(e) {
-    if (e.target.id === "delete") {
-        deletePerson(e);
+    switch(e.target.id) {
+        case "delete":
+            deletePerson(e);
+            break;
+        case "edit": 
+        getPerson(e);
+            editPerson(e);
     }
 });
 
@@ -164,24 +167,62 @@ function deletePerson(e) {
     })
 }
 
-function editPerson(person) {
-    personFacade.editPerson(person)
-    .then(editedPerson => {
-        // add message
-        getAll();
-    })
-    .catch(e => {
-        // add element to show error
-        printError(e, x);
+let editFormElems = document.getElementById("editForm").elements;
+
+function getPerson(e) {
+    for (let i = 0; i < editFormElems.length; i++) {
+        editFormElems.item(i).value = "";
+    }
+    personFacade.getPersonById(e.target.value)
+    .then(person => {
+        editFormElems.namedItem("eFname").value = person.firstName;
+        editFormElems.namedItem("eLname").value = person.lastName;
+        editFormElems.namedItem("eEmail").value = person.email;
+        editFormElems.namedItem("eStreet").value = person.street;
+        editFormElems.namedItem("eCities").value = `${person.zipCode} ${person.city}`;
+        person.hobbies.forEach(hobby => {
+            document.getElementById("eHobbies").innerHTML += `<option value="${hobby.name}" selected>${hobby.name}</option>`;
+        })
+        editFormElems.namedItem("ePhone").value = person.phoneNumbers;
     })
 }
 
+function editPerson(e) {
+    let zipCode = editFormElems.namedItem("eCity").value.substring(0,4);
+    let city = editFormElems.namedItem("eCity").value.substring(5);
+
+    let hobbyArray = []
+    for(let i=0; i< $('#hobbies').val().length;i++){
+      let hobby = {
+        name : $('#hobbies').val()[i]
+      }
+      hobbyArray[i] = hobby
+    }
+
+    let phone = [{
+        number : editFormElems.namedItem("phone").value,
+        description : "Work"
+    }]
+
+    let person = {
+        firstName : editFormElems.namedItem("eFname").value,
+        lastName : editFormElems.namedItem("eLname").value,
+        email : editFormElems.namedItem("eEmail").value,
+        street : editFormElems.namedItem("eStreet").value,
+        city : city,
+        zipCode : zipCode,
+        hobbies: hobbyArray,
+        phoneNumbers: phone[0]
+    }
+}
+
 function getAllZipCodes() {
-    let string;
     zipFacade.getAllZipcodes()
     .then(cities => {
         cities.forEach(city => {
           document.getElementById("cities").innerHTML += 
+          `<option value="${city.zipCode},${city.city}">${city.zipCode} ${city.city}</option>`;
+          document.getElementById("eCities").innerHTML += 
           `<option value="${city.zipCode},${city.city}">${city.zipCode} ${city.city}</option>`;
         })
     })
@@ -223,7 +264,8 @@ function createPersonTable(data) {
         <td>${person.zipCode}</td>
         <td>${displayArray = person.hobbies.map(hobby => hobby.name).join(", ")}</td>
         <td>${displayArray = person.phoneNumbers.map(phone => phone.number).join(", ")}</td>
-        <td><button id="delete" value="${person.id}" class="btn btn-danger">Delete</button></td>
+        <td><button id="edit" value="${person.id}" class="btn btn-dark" data-toggle="modal" data-target="#editModal"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+        <button id="delete" value="${person.id}" class="btn btn-danger"><i class="fa fa-trash-o" aria-hidden="true"></i></button></td>
         `;
     }
 }
@@ -231,8 +273,9 @@ function createPersonTable(data) {
 function getAllHobbies(){
   personFacade.getAllHobbies()
   .then(hobbies => {
-      let hobbyOptions = hobbies.map(hobby => {
-        document.getElementById("hobbies").innerHTML += `<option value="${hobby.name}">${hobby.name}</option>`  
+        hobbies.forEach(hobby => {
+          document.getElementById("hobbies").innerHTML += `<option value="${hobby.name}">${hobby.name}</option>`;  
+          document.getElementById("eHobbies").innerHTML += `<option value="${hobby.name}">${hobby.name}</option>`;
       })
 
     })
