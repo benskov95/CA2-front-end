@@ -67,6 +67,7 @@
 
           </div>
           <div class="modal-body">
+            <form id="addForm">
               <input type="hidden" id="id">
               <div class="form-group">
                 <label for="fname">First Name</label>
@@ -86,26 +87,26 @@
               </div>
               <div class="form-group">
                 <label for="city">City</label>
-                <select class="city" id="cities" name="city">
+                <select class="city" id="cities" name="zipcode">
                   <option value="AL">Enter city name or ZIP code.</option>
                 </select>
               </div>
               <div class="form-group">
                 <label for="hobbies">Hobbies</label>
-                <select class="hobbies" id="hobbies" multiple="multiple">
+                <select class="hobbies" id="hobbies" multiple="multiple" name="hobbies">
                 </select>
               </div>
               <div class="form-group">
                 <label for="phone">Phone</label>
                 <input type="text" class="form-control" name="phone" id="phone">
             </div>
-
+          </form>
             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">
 
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-light" data-dismiss="modal">Cancel</button>
-            <button type="button" id="savebtn" class="btn btn-success" data-dismiss="modal">Save changes</button>
+            <button type="button" id="add" class="btn btn-success" data-dismiss="modal">Add Person</button>
           </div>
         </div>
       </div>

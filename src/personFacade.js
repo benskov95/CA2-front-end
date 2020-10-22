@@ -54,7 +54,7 @@ function getPersonsFromGivenCity(city){
 
 function addPerson (person){
     const options = makeOptions("POST",person)
-    return fetch(URL)
+    return fetch(URL,options)
     .then(handleHttpErrors)
 
 }
