@@ -10,6 +10,9 @@ import zipFacade from "./zipFacade"
 
 let status = document.getElementById("status");
 let input = document.getElementById("searchword");
+let addPhonesArray = [];
+let addError = document.getElementById("addError");
+addError.style.color = "red";
 document.getElementById("refresh").addEventListener("click", getAll);
 document.getElementById("add").addEventListener("click", addPerson);
 
@@ -88,34 +91,19 @@ function getPersonsFromGivenCity() {
     })
 }
 
-
-
 function addPerson() {
     let formElements = document.getElementById("addForm").elements;
     let hobbyArray = []
+    addPhonesArray = [];
       for(let i=0; i< $('#hobbies').val().length;i++){
         let hobby = {
           name : $('#hobbies').val()[i]
         }
         hobbyArray[i] = hobby
       }
-
-    // let phoneArray = []
-    //   for(let i=0; i< $('#cities').val().length;i++){
-    //     let number = {
-    //       number : $('#cities').val()[i],
-    //       description : "work"
-    //     }
-    //     phoneArray[i] = number
-    //   }
-
-    let phone = [{
-      number : formElements.namedItem("phone").value,
-      description : "Work"
-  }]
     
-    let zipCode = formElements.namedItem("zipcode").value.substring(0,4)
-    let city = formElements.namedItem("zipcode").value.substring(5) 
+    let zipCode = formElements.namedItem("aCity").value.substring(0,4)
+    let city = formElements.namedItem("aCity").value.substring(5) 
     
     
     let person = {
@@ -126,7 +114,6 @@ function addPerson() {
       zipCode : zipCode,
       hobbies : hobbyArray,
       city : city,
-      phoneNumbers : phone
       
     }
   
@@ -136,9 +123,68 @@ function addPerson() {
         getAll();
     })
     .catch(e => {
-        // add element to show error
-        printError(e, status);
+        status.style.color = "red";
+        printError(e, status)
+        removeStatusText(status, 10000);
     });
+}
+
+document.getElementById("aAddPhone").addEventListener("click", addPhoneNumbers);
+
+function addPhoneNumbers(e) {
+    e.preventDefault();
+    let phoneNumber = document.getElementById("aPhone");
+    let work = document.getElementById("aWork");
+    let home = document.getElementById("aHome");
+    let other = document.getElementById("aOther");
+    let description;
+    let goodToGo = false;
+
+    if (work.checked || home.checked || other.checked) {
+        if (phoneNumber.value.length >= 5) {
+            goodToGo = true;
+        }
+
+        if (work.checked) {
+            description = work.value;
+        } else if (home.checked) {
+            description = home.value;
+        } else if (other.checked) {
+            description = other.value;
+        }
+
+        if (goodToGo) {
+        let phone = {
+            number : phoneNumber.value,
+            description: description
+        }
+        addPhonesArray.push(phone);
+        document.getElementById("aPhoneArray").innerHTML += `- ${phone.description}: ${phone.number}<br>`;
+        phoneNumber.value = "";
+        work.checked = false;
+        home.checked = false;
+        other.checked = false;
+    } else {
+        addError.innerText = "The phone number must consist of at least 5 characters.";
+    }
+    } else {
+        addError.innerText = "You have to pick a type.";
+    }
+    setTimeout(() => {
+        addError.innerText = "";
+    }, 5000);
+}
+
+document.getElementById("aRemovePhone").addEventListener("click", removePhoneNumber);
+
+function removePhoneNumber(e) {
+    e.preventDefault();
+    let showArray = document.getElementById("aPhoneArray");
+    showArray.innerHTML = "";
+    addPhonesArray.pop();
+    addPhonesArray.forEach(phone => {
+        showArray.innerHTML += `- ${phone.description}: ${phone.number}<br>`;
+    })
 }
 
 document.getElementById("tbody").addEventListener("click", function(e) {
@@ -170,6 +216,8 @@ function deletePerson(e) {
 let editFormElems = document.getElementById("editForm").elements;
 
 function getPerson(e) {
+    let count = -1;
+    let phHobbies = [];
     for (let i = 0; i < editFormElems.length; i++) {
         editFormElems.item(i).value = "";
     }
@@ -179,31 +227,35 @@ function getPerson(e) {
         editFormElems.namedItem("eLname").value = person.lastName;
         editFormElems.namedItem("eEmail").value = person.email;
         editFormElems.namedItem("eStreet").value = person.street;
-        editFormElems.namedItem("eCities").value = `${person.zipCode} ${person.city}`;
+        editFormElems.namedItem("eCity").innerHTML += `<option id="phCity" selected disabled>${person.zipCode} ${person.city}<option>`;
         person.hobbies.forEach(hobby => {
-            document.getElementById("eHobbies").innerHTML += `<option value="${hobby.name}" selected>${hobby.name}</option>`;
+            count++;
+            document.getElementById("eHobbies").innerHTML += `<option id="${count}" value="${hobby.name}" selected>${hobby.name}</option>`;
+            phHobbies[count] = count;
         })
-        editFormElems.namedItem("ePhone").value = person.phoneNumbers;
+        editFormElems.namedItem("ePhone").value = person.phoneNumbers.map(phone => phone.number).join(", ");
+        removePlaceholders(phHobbies);
     })
 }
+
 
 function editPerson(e) {
     let zipCode = editFormElems.namedItem("eCity").value.substring(0,4);
     let city = editFormElems.namedItem("eCity").value.substring(5);
-
+    
     let hobbyArray = []
     for(let i=0; i< $('#hobbies').val().length;i++){
-      let hobby = {
-        name : $('#hobbies').val()[i]
-      }
-      hobbyArray[i] = hobby
+        let hobby = {
+            name : $('#hobbies').val()[i]
+        }
+        hobbyArray[i] = hobby
     }
-
-    let phone = [{
-        number : editFormElems.namedItem("phone").value,
-        description : "Work"
-    }]
-
+    
+    // let phone = [{
+    //     number : editFormElems.namedItem("ePhone").value,
+    //     description : "Work"
+    // }]
+    
     let person = {
         firstName : editFormElems.namedItem("eFname").value,
         lastName : editFormElems.namedItem("eLname").value,
@@ -215,29 +267,6 @@ function editPerson(e) {
         phoneNumbers: phone[0]
     }
 }
-
-function getAllZipCodes() {
-    zipFacade.getAllZipcodes()
-    .then(cities => {
-        cities.forEach(city => {
-          document.getElementById("cities").innerHTML += 
-          `<option value="${city.zipCode},${city.city}">${city.zipCode} ${city.city}</option>`;
-          document.getElementById("eCities").innerHTML += 
-          `<option value="${city.zipCode},${city.city}">${city.zipCode} ${city.city}</option>`;
-        })
-    })
-}
-
-function printError(promise, element) {
-     promise.fullError.then(function(error) {
-         element.innerText = `${error.code} : ${error.message}`;
-    })}
-
-function removeStatusText(textElement, duration) {
-    setTimeout(function() {
-        textElement.innerText = "";
-        }, duration);
-      }
 
 function createPersonTable(data) {
     let personRows;
@@ -264,7 +293,7 @@ function createPersonTable(data) {
         <td>${person.zipCode}</td>
         <td>${displayArray = person.hobbies.map(hobby => hobby.name).join(", ")}</td>
         <td>${displayArray = person.phoneNumbers.map(phone => phone.number).join(", ")}</td>
-        <td><button id="edit" value="${person.id}" class="btn btn-dark fa fa-pencil" aria-hidden="true" data-toggle="modal" data-target="#editModal"></button>
+        <td><button id="edit" value="${person.id}" class="btn btn-warning fa fa-pencil" aria-hidden="true" data-toggle="modal" data-target="#editModal"></button>
         <button id="delete" value="${person.id}" class="btn btn-danger fa fa-trash-o" aria-hidden="true"></button></td>
         `;
     }
@@ -279,4 +308,38 @@ function getAllHobbies(){
       })
 
     })
+}
+
+function getAllZipCodes() {
+    zipFacade.getAllZipcodes()
+    .then(cities => {
+        cities.forEach(city => {
+            document.getElementById("aCity").innerHTML += 
+            `<option value="${city.zipCode},${city.city}">${city.zipCode} ${city.city}</option>`;
+            document.getElementById("eCity").innerHTML += 
+            `<option value="${city.zipCode},${city.city}">${city.zipCode} ${city.city}</option>`;
+        })
+    })
+}
+
+function printError(promise, element) {
+    promise.fullError.then(function(error) {
+        element.innerText = `${error.code} : ${error.message}`;
+    })}
+    
+    function removeStatusText(textElement, duration) {
+        setTimeout(function() {
+            textElement.innerText = "";
+        }, duration);
+    }
+    
+function removePlaceholders(phHobbies) {
+    let phCity = document.getElementById("phCity");
+    setTimeout(() => {
+        editFormElems.namedItem("eCity").removeChild(phCity);
+        phHobbies.forEach(id => {
+            let phHobby = document.getElementById(id);
+            editFormElems.namedItem("eHobbies").removeChild(phHobby)
+        })
+    }, 30000);
 }
