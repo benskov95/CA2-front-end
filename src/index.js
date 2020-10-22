@@ -10,7 +10,6 @@ import zipFacade from "./zipFacade"
 
 let status = document.getElementById("status");
 let input = document.getElementById("searchword");
-let cityArray = [];
 document.getElementById("refresh").addEventListener("click", getAll);
 
 $(document).ready(function() {
@@ -127,24 +126,29 @@ function deletePerson(e) {
     })
 }
 
+let editFormElems = document.getElementById("editForm").elements;
+
 function getPerson(e) {
     personFacade.getPersonById(e.target.value)
     .then(person => {
-
+        console.log(person);
+        editFormElems.namedItem("eFname").value = person.firstName;
+        editFormElems.namedItem("eLname").value = person.lastName;
+        editFormElems.namedItem("eEmail").value = person.email;
+        editFormElems.namedItem("eStreet").value = person.street;
+        editFormElems.namedItem("eCities").value = `${person.zipCode} ${person.city}`;
+        editFormElems.namedItem("eHobbies").value = person.hobbies;
+        editFormElems.namedItem("ePhone").value = person.phoneNumbers;
     })
 }
 
 function editPerson(e) {
-
-    personFacade.editPerson(person)
-    .then(editedPerson => {
-        // add message
-        getAll();
-    })
-    .catch(e => {
-        // add element to show error
-        printError(e, x);
-    })
+    let person = {
+        firstName : editFormElems.namedItem("eFname").value,
+        lastName : editFormElems.namedItem("eLname").value,
+        email : editFormElems.namedItem("eEmail").value,
+        street : editFormElems.namedItem("eStreet").value
+    }
 }
 
 function getAllZipCodes() {
@@ -194,8 +198,8 @@ function createPersonTable(data) {
         <td>${person.zipCode}</td>
         <td>${displayArray = person.hobbies.map(hobby => hobby.name).join(", ")}</td>
         <td>${displayArray = person.phoneNumbers.map(phone => phone.number).join(", ")}</td>
-        <td><button id="edit" value="${person.id}" class="btn btn-warning">Edit</button></td>
-        <td><button id="delete" value="${person.id}" class="btn btn-danger" data-toggle="modal" data-target="#editModal">Delete</button></td>
+        <td><button id="edit" value="${person.id}" class="btn btn-dark"><i class="fa fa-pencil" aria-hidden="true" data-toggle="modal" data-target="#editModal"></i></i></button>
+        <button id="delete" value="${person.id}" class="btn btn-danger"><i class="fa fa-trash-o" aria-hidden="true"></i></button></td>
         `;
     }
 }
