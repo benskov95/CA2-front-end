@@ -131,10 +131,7 @@ function addPerson() {
       phoneNumbers : phone
       
     }
-    console.log(formElements.namedItem("zipcode"))
-    //console.log(person)
-
-
+  
     personFacade.addPerson(person)
     .then(newPerson => {
         // show message
