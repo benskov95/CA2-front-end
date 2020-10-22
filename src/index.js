@@ -264,8 +264,8 @@ function createPersonTable(data) {
         <td>${person.zipCode}</td>
         <td>${displayArray = person.hobbies.map(hobby => hobby.name).join(", ")}</td>
         <td>${displayArray = person.phoneNumbers.map(phone => phone.number).join(", ")}</td>
-        <td><button id="edit" value="${person.id}" class="btn btn-dark" data-toggle="modal" data-target="#editModal"><i class="fa fa-pencil" aria-hidden="true"></i></button>
-        <button id="delete" value="${person.id}" class="btn btn-danger"><i class="fa fa-trash-o" aria-hidden="true"></i></button></td>
+        <td><button id="edit" value="${person.id}" class="btn btn-dark fa fa-pencil" aria-hidden="true" data-toggle="modal" data-target="#editModal"></button>
+        <button id="delete" value="${person.id}" class="btn btn-danger fa fa-trash-o" aria-hidden="true"></button></td>
         `;
     }
 }
