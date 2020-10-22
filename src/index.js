@@ -1,12 +1,25 @@
 import "./style.css"
+import $ from "jquery"
+import "select2"
+import "select2/dist/css/select2.min.css"
 import "bootstrap"
 import "bootstrap/dist/css/bootstrap.css"
 import personFacade from "./personFacade"
 import zipFacade from "./zipFacade"
 
+
 let status = document.getElementById("status");
 let input = document.getElementById("searchword");
 document.getElementById("refresh").addEventListener("click", getAll);
+
+$(document).ready(function() {
+    $('.hobbies').select2({
+      placeholder : "Select your hobbies",
+      width : "100%",
+      allowClear: true
+    });
+});
+
 
 getAll();
 function getAll() {
