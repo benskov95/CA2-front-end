@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
-  <title>Index</title>
+  <title>CA2</title>
 </head>
 
 <body>
@@ -98,7 +98,17 @@
               </div>
               <div class="form-group">
                 <label for="phone">Phone</label>
-                <input type="text" class="form-control" name="phone" id="phone">
+                <input type="text" class="form-control" name="phone" id="aPhone">
+                <input type="radio" id="aWork" name="type" value="work">
+                <label for="work" style="margin-right: 10px;">Work</label>
+                <input type="radio" id="aHome" name="type" value="home">
+                <label for="home" style="margin-right: 10px;">Home</label>
+                <input type="radio" id="aOther" name="type" value="other">
+                <label for="other">Other</label>
+                <button id="aAddPhone" style="margin-left: 135px;">Add</button>
+                <button id="aRemovePhone">Remove</button>
+                <p id="addError"></p>
+                <p id="aPhoneArray"></p>
             </div>
           </form>
             <input type="submit" tabindex="-1" style="position:absolute; top:-1000px">

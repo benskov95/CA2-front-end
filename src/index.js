@@ -10,6 +10,9 @@ import zipFacade from "./zipFacade"
 
 let status = document.getElementById("status");
 let input = document.getElementById("searchword");
+let addPhonesArray = [];
+let addError = document.getElementById("addError");
+addError.style.color = "red";
 document.getElementById("refresh").addEventListener("click", getAll);
 document.getElementById("add").addEventListener("click", addPerson);
 
@@ -88,31 +91,16 @@ function getPersonsFromGivenCity() {
     })
 }
 
-
-
 function addPerson() {
     let formElements = document.getElementById("addForm").elements;
     let hobbyArray = []
+    addPhonesArray = [];
       for(let i=0; i< $('#hobbies').val().length;i++){
         let hobby = {
           name : $('#hobbies').val()[i]
         }
         hobbyArray[i] = hobby
       }
-
-    // let phoneArray = []
-    //   for(let i=0; i< $('#cities').val().length;i++){
-    //     let number = {
-    //       number : $('#cities').val()[i],
-    //       description : "work"
-    //     }
-    //     phoneArray[i] = number
-    //   }
-
-    let phone = [{
-      number : formElements.namedItem("phone").value,
-      description : "Work"
-  }]
     
     let zipCode = formElements.namedItem("aCity").value.substring(0,4)
     let city = formElements.namedItem("aCity").value.substring(5) 
@@ -126,7 +114,6 @@ function addPerson() {
       zipCode : zipCode,
       hobbies : hobbyArray,
       city : city,
-      phoneNumbers : phone
       
     }
   
@@ -140,6 +127,64 @@ function addPerson() {
         printError(e, status)
         removeStatusText(status, 10000);
     });
+}
+
+document.getElementById("aAddPhone").addEventListener("click", addPhoneNumbers);
+
+function addPhoneNumbers(e) {
+    e.preventDefault();
+    let phoneNumber = document.getElementById("aPhone");
+    let work = document.getElementById("aWork");
+    let home = document.getElementById("aHome");
+    let other = document.getElementById("aOther");
+    let description;
+    let goodToGo = false;
+
+    if (work.checked || home.checked || other.checked) {
+        if (phoneNumber.value.length >= 5) {
+            goodToGo = true;
+        }
+
+        if (work.checked) {
+            description = work.value;
+        } else if (home.checked) {
+            description = home.value;
+        } else if (other.checked) {
+            description = other.value;
+        }
+
+        if (goodToGo) {
+        let phone = {
+            number : phoneNumber.value,
+            description: description
+        }
+        addPhonesArray.push(phone);
+        document.getElementById("aPhoneArray").innerHTML += `- ${phone.description}: ${phone.number}<br>`;
+        phoneNumber.value = "";
+        work.checked = false;
+        home.checked = false;
+        other.checked = false;
+    } else {
+        addError.innerText = "The phone number must consist of at least 5 characters.";
+    }
+    } else {
+        addError.innerText = "You have to pick a type.";
+    }
+    setTimeout(() => {
+        addError.innerText = "";
+    }, 5000);
+}
+
+document.getElementById("aRemovePhone").addEventListener("click", removePhoneNumber);
+
+function removePhoneNumber(e) {
+    e.preventDefault();
+    let showArray = document.getElementById("aPhoneArray");
+    showArray.innerHTML = "";
+    addPhonesArray.pop();
+    addPhonesArray.forEach(phone => {
+        showArray.innerHTML += `- ${phone.description}: ${phone.number}<br>`;
+    })
 }
 
 document.getElementById("tbody").addEventListener("click", function(e) {
@@ -206,10 +251,10 @@ function editPerson(e) {
         hobbyArray[i] = hobby
     }
     
-    let phone = [{
-        number : editFormElems.namedItem("phone").value,
-        description : "Work"
-    }]
+    // let phone = [{
+    //     number : editFormElems.namedItem("ePhone").value,
+    //     description : "Work"
+    // }]
     
     let person = {
         firstName : editFormElems.namedItem("eFname").value,
