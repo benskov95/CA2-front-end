@@ -327,11 +327,11 @@ function printError(promise, element) {
         element.innerText = `${error.code} : ${error.message}`;
     })}
     
-    function removeStatusText(textElement, duration) {
-        setTimeout(function() {
-            textElement.innerText = "";
-        }, duration);
-    }
+function removeStatusText(textElement, duration) {
+    setTimeout(function() {
+        textElement.innerText = "";
+    }, duration);
+}
     
 function removePlaceholders(phHobbies) {
     let phCity = document.getElementById("phCity");
