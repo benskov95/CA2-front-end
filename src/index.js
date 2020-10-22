@@ -12,6 +12,7 @@ let status = document.getElementById("status");
 let input = document.getElementById("searchword");
 let cityArray = [];
 document.getElementById("refresh").addEventListener("click", getAll);
+document.getElementById("add").addEventListener("click", addPerson);
 
 $(document).ready(function() {
     $('.hobbies').select2({
@@ -88,9 +89,52 @@ function getPersonsFromGivenCity() {
     })
 }
 
-document.getElementById("addPerson").addEventListener("click", addPerson)
 
-function addPerson(person) {
+
+function addPerson() {
+    let formElements = document.getElementById("addForm").elements;
+    let hobbyArray = []
+      for(let i=0; i< $('#hobbies').val().length;i++){
+        let hobby = {
+          name : $('#hobbies').val()[i]
+        }
+        hobbyArray[i] = hobby
+      }
+
+    // let phoneArray = []
+    //   for(let i=0; i< $('#cities').val().length;i++){
+    //     let number = {
+    //       number : $('#cities').val()[i],
+    //       description : "work"
+    //     }
+    //     phoneArray[i] = number
+    //   }
+
+    let phone = [{
+      
+      number : formElements.namedItem("phone").value,
+      description : "Work"
+  }]
+    
+    let zipCode = formElements.namedItem("zipcode").value.substring(0,4)
+    let city = formElements.namedItem("zipcode").value.substring(5) 
+    
+    
+    let person = {
+      firstName : formElements.namedItem("fname").value,
+      lastName : formElements.namedItem("lname").value,
+      email : formElements.namedItem("email").value,
+      street : formElements.namedItem("street").value,
+      zipCode : zipCode,
+      hobbies : hobbyArray,
+      city : city,
+      phoneNumbers : phone
+      
+    }
+    console.log(formElements.namedItem("zipcode"))
+    //console.log(person)
+
+
     personFacade.addPerson(person)
     .then(newPerson => {
         // show message
@@ -98,7 +142,7 @@ function addPerson(person) {
     })
     .catch(e => {
         // add element to show error
-        printError(e, x);
+        printError(e, status);
     });
 }
 
@@ -141,7 +185,7 @@ function getAllZipCodes() {
     .then(cities => {
         cities.forEach(city => {
           document.getElementById("cities").innerHTML += 
-          `<option value="${city.city}">${city.zipCode} ${city.city}</option>`;
+          `<option value="${city.zipCode},${city.city}">${city.zipCode} ${city.city}</option>`;
         })
     })
 }
