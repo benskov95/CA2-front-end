@@ -10,6 +10,7 @@ import zipFacade from "./zipFacade"
 
 let status = document.getElementById("status");
 let input = document.getElementById("searchword");
+let cityArray = [];
 document.getElementById("refresh").addEventListener("click", getAll);
 
 $(document).ready(function() {
@@ -18,10 +19,16 @@ $(document).ready(function() {
       width : "100%",
       allowClear: true
     });
+    $('.city').select2({
+        placeholder : "Enter city name or ZIP code.",
+        width: "100%",
+        allowClear: true
+    });
 });
 
-
 getAll();
+getAllZipCodes();
+
 function getAll() {
     personFacade.getAllPersons()
     .then(persons => {
@@ -83,7 +90,6 @@ function getPersonsFromGivenCity() {
 document.getElementById("addPerson").addEventListener("click", addPerson)
 
 function addPerson(person) {
-
     personFacade.addPerson(person)
     .then(newPerson => {
         // show message
@@ -125,6 +131,17 @@ function editPerson(person) {
     .catch(e => {
         // add element to show error
         printError(e, x);
+    })
+}
+
+function getAllZipCodes() {
+    let string;
+    zipFacade.getAllZipcodes()
+    .then(cities => {
+        cities.forEach(city => {
+          document.getElementById("cities").innerHTML += 
+          `<option value="${city.city}">${city.zipCode} ${city.city}</option>`;
+        })
     })
 }
 

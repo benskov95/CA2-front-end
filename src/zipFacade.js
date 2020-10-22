@@ -8,11 +8,8 @@ const zipFacade = {
 }
 
 function getAllZipcodes() {
-    const options = makeOptions("GET")
-    fetch(URL)
+   return fetch(URL)
     .then(handleHttpErrors)
-
-
 }
 
 
