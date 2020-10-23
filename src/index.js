@@ -92,9 +92,11 @@ function getPersonsFromGivenCity() {
 }
 
 function addPerson() {
-    let formElements = document.getElementById("addForm").elements;
-    let hobbyArray = []
-    addPhonesArray = [];
+    let addForm = document.getElementById("addForm");
+    let phoneElement = document.getElementById("aPhoneArray");
+    let cityElement = document.getElementById("aCity");
+    let hobbiesElement = document.getElementById("hobbies");
+    let hobbyArray = [];
       for(let i=0; i< $('#hobbies').val().length;i++){
         let hobby = {
           name : $('#hobbies').val()[i]
@@ -102,24 +104,26 @@ function addPerson() {
         hobbyArray[i] = hobby
       }
     
-    let zipCode = formElements.namedItem("aCity").value.substring(0,4)
-    let city = formElements.namedItem("aCity").value.substring(5) 
+    let cityInfo = addForm.elements.namedItem("aCity").value.split(" ");
+    let zipCode = cityInfo[0];
+    cityInfo.shift();
+    let city = cityInfo.join(" ");
     
     
     let person = {
-      firstName : formElements.namedItem("fname").value,
-      lastName : formElements.namedItem("lname").value,
-      email : formElements.namedItem("email").value,
-      street : formElements.namedItem("street").value,
+      firstName : addForm.elements.namedItem("fname").value,
+      lastName : addForm.elements.namedItem("lname").value,
+      email : addForm.elements.namedItem("email").value,
+      street : addForm.elements.namedItem("street").value,
+      city: city,
       zipCode : zipCode,
       hobbies : hobbyArray,
-      city : city,
-      
+      phoneNumbers : addPhonesArray
     }
   
     personFacade.addPerson(person)
     .then(newPerson => {
-        // show message
+        testi(addForm, phoneElement, cityElement, hobbiesElement);
         getAll();
     })
     .catch(e => {
@@ -127,6 +131,16 @@ function addPerson() {
         printError(e, status)
         removeStatusText(status, 10000);
     });
+}
+
+function testi(form, phones, city, hobbies) {
+    form.reset();
+    phones.innerText = "";
+    city.innerHTML += '<option id="addClearC"></option>';
+    hobbies.innerHTML += '<option id="addClearH"></option>';
+    city.removeChild(document.getElementById("addClearC"));
+    hobbies.removeChild(document.getElementById("addClearH")); 
+    addPhonesArray = [];
 }
 
 document.getElementById("aAddPhone").addEventListener("click", addPhoneNumbers);
@@ -293,8 +307,8 @@ function createPersonTable(data) {
         <td>${person.zipCode}</td>
         <td>${displayArray = person.hobbies.map(hobby => hobby.name).join(", ")}</td>
         <td>${displayArray = person.phoneNumbers.map(phone => phone.number).join(", ")}</td>
-        <td><button id="edit" value="${person.id}" class="btn btn-warning fa fa-pencil" aria-hidden="true" data-toggle="modal" data-target="#editModal"></button>
-        <button id="delete" value="${person.id}" class="btn btn-danger fa fa-trash-o" aria-hidden="true"></button></td>
+        <td><button id="edit" value="${person.id}" class="btn btn-dark fa fa-pencil" aria-hidden="true" data-toggle="modal" data-target="#editModal"></button>
+        <button id="delete" value="${person.id}" class="btn btn-dark fa fa-trash-o" aria-hidden="true"></button></td>
         `;
     }
 }
@@ -315,9 +329,9 @@ function getAllZipCodes() {
     .then(cities => {
         cities.forEach(city => {
             document.getElementById("aCity").innerHTML += 
-            `<option value="${city.zipCode},${city.city}">${city.zipCode} ${city.city}</option>`;
+            `<option value="${city.zipCode} ${city.city}">${city.zipCode} ${city.city}</option>`;
             document.getElementById("eCity").innerHTML += 
-            `<option value="${city.zipCode},${city.city}">${city.zipCode} ${city.city}</option>`;
+            `<option value="${city.zipCode} ${city.city}">${city.zipCode} ${city.city}</option>`;
         })
     })
 }
