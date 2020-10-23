@@ -227,14 +227,14 @@ function getPerson(e) {
         editFormElems.namedItem("eLname").value = person.lastName;
         editFormElems.namedItem("eEmail").value = person.email;
         editFormElems.namedItem("eStreet").value = person.street;
-        editFormElems.namedItem("eCity").innerHTML += `<option id="phCity" selected disabled>${person.zipCode} ${person.city}<option>`;
+        editFormElems.namedItem("eCity").innerHTML += `<option id="ph${person.zipCode}" selected disabled>${person.zipCode} ${person.city}<option>`;
         person.hobbies.forEach(hobby => {
             count++;
-            document.getElementById("eHobbies").innerHTML += `<option id="${count}" value="${hobby.name}" selected>${hobby.name}</option>`;
-            phHobbies[count] = count;
+            document.getElementById("eHobbies").innerHTML += `<option id="ph${hobby.name}" value="${hobby.name}" selected>${hobby.name}</option>`;
+            phHobbies[count] = `ph${hobby.name}`;
         })
         editFormElems.namedItem("ePhone").value = person.phoneNumbers.map(phone => phone.number).join(", ");
-        removePlaceholders(phHobbies);
+        removePlaceholders(phHobbies, person.zipCode);
     })
 }
 
@@ -333,8 +333,8 @@ function removeStatusText(textElement, duration) {
     }, duration);
 }
     
-function removePlaceholders(phHobbies) {
-    let phCity = document.getElementById("phCity");
+function removePlaceholders(phHobbies, zipCode) {
+    let phCity = document.getElementById(`ph${zipCode}`);
     setTimeout(() => {
         editFormElems.namedItem("eCity").removeChild(phCity);
         phHobbies.forEach(id => {
