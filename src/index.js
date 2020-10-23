@@ -11,10 +11,12 @@ import zipFacade from "./zipFacade"
 let status = document.getElementById("status");
 let input = document.getElementById("searchword");
 let addPhonesArray = [];
-let addError = document.getElementById("addError");
+let personForm = document.getElementById("personForm");
+let formElements = personForm.elements;
+let addError = document.getElementById("formError");
 addError.style.color = "red";
 document.getElementById("refresh").addEventListener("click", getAll);
-document.getElementById("add").addEventListener("click", addPerson);
+document.getElementById("submit").addEventListener("click", addPerson);
 
 $(document).ready(function() {
     $('.hobbies').select2({
@@ -40,7 +42,7 @@ function getAll() {
     });
 }
 
-document.getElementById("phone").addEventListener("click", getPersonByPhone);
+document.getElementById("phoneBtn").addEventListener("click", getPersonByPhone);
 
 function getPersonByPhone() {
     personFacade.getPersonByPhone(input.value)
@@ -54,7 +56,7 @@ function getPersonByPhone() {
     })
 }
 
-document.getElementById("hobby").addEventListener("click", getPersonsWithGivenHobby);
+document.getElementById("hobbyBtn").addEventListener("click", getPersonsWithGivenHobby);
 
 function getPersonsWithGivenHobby() {
     let hobby = input.value;
@@ -78,7 +80,8 @@ function getHobbyCount(input) {
     })
 }
 
-document.getElementById("city").addEventListener("click", getPersonsFromGivenCity);
+document.getElementById("cityBtn").addEventListener("click", getPersonsFromGivenCity);
+
 function getPersonsFromGivenCity() {
     personFacade.getPersonsFromGivenCity(input.value)
     .then(persons => {
@@ -92,10 +95,9 @@ function getPersonsFromGivenCity() {
 }
 
 function addPerson() {
-    let addForm = document.getElementById("addForm");
-    let phoneElement = document.getElementById("aPhoneArray");
-    let cityElement = document.getElementById("aCity");
-    let hobbiesElement = document.getElementById("hobbies");
+    let phoneElement = document.getElementById("phoneArray");
+    let cityElement = formElements.namedItem("city");
+    let hobbiesElement = formElements.namedItem("hobbies");
     let hobbyArray = [];
       for(let i=0; i< $('#hobbies').val().length;i++){
         let hobby = {
@@ -104,17 +106,17 @@ function addPerson() {
         hobbyArray[i] = hobby
       }
     
-    let cityInfo = addForm.elements.namedItem("aCity").value.split(" ");
+    let cityInfo = formElements.namedItem("city").value.split(" ");
     let zipCode = cityInfo[0];
     cityInfo.shift();
     let city = cityInfo.join(" ");
     
     
     let person = {
-      firstName : addForm.elements.namedItem("fname").value,
-      lastName : addForm.elements.namedItem("lname").value,
-      email : addForm.elements.namedItem("email").value,
-      street : addForm.elements.namedItem("street").value,
+      firstName : formElements.namedItem("fname").value,
+      lastName : formElements.namedItem("lname").value,
+      email : formElements.namedItem("email").value,
+      street : formElements.namedItem("street").value,
       city: city,
       zipCode : zipCode,
       hobbies : hobbyArray,
@@ -123,7 +125,7 @@ function addPerson() {
   
     personFacade.addPerson(person)
     .then(newPerson => {
-        testi(addForm, phoneElement, cityElement, hobbiesElement);
+        clearFormFields(personForm, phoneElement, cityElement, hobbiesElement);
         getAll();
     })
     .catch(e => {
@@ -133,28 +135,27 @@ function addPerson() {
     });
 }
 
-function testi(form, phones, city, hobbies) {
+function clearFormFields(form, phones, city, hobbies) {
     form.reset();
     phones.innerText = "";
-    city.innerHTML += '<option id="addClearC"></option>';
-    hobbies.innerHTML += '<option id="addClearH"></option>';
-    city.removeChild(document.getElementById("addClearC"));
-    hobbies.removeChild(document.getElementById("addClearH")); 
+    city.innerHTML += '<option id="clearCity"></option>';
+    hobbies.innerHTML += '<option id="clearHobbies"></option>';
+    city.removeChild(document.getElementById("clearCity"));
+    hobbies.removeChild(document.getElementById("clearHobbies")); 
     addPhonesArray = [];
 }
 
-document.getElementById("aAddPhone").addEventListener("click", addPhoneNumbers);
+document.getElementById("addPhone").addEventListener("click", addPhoneNumbers);
 
 function addPhoneNumbers(e) {
     e.preventDefault();
-    let phoneNumber = document.getElementById("aPhone");
-    let work = document.getElementById("aWork");
-    let home = document.getElementById("aHome");
-    let other = document.getElementById("aOther");
+    let phoneNumber = formElements.namedItem("phone");
+    let work = formElements.namedItem("work");
+    let home = formElements.namedItem("home");
+    let other = formElements.namedItem("other");
     let description;
     let goodToGo = false;
 
-    if (work.checked || home.checked || other.checked) {
         if (phoneNumber.value.length >= 5) {
             goodToGo = true;
         }
@@ -173,27 +174,24 @@ function addPhoneNumbers(e) {
             description: description
         }
         addPhonesArray.push(phone);
-        document.getElementById("aPhoneArray").innerHTML += `- ${phone.description}: ${phone.number}<br>`;
+        document.getElementById("phoneArray").innerHTML += `- ${phone.description}: ${phone.number}<br>`;
         phoneNumber.value = "";
         work.checked = false;
         home.checked = false;
         other.checked = false;
     } else {
         addError.innerText = "The phone number must consist of at least 5 characters.";
-    }
-    } else {
-        addError.innerText = "You have to pick a type.";
-    }
+    } 
     setTimeout(() => {
         addError.innerText = "";
     }, 5000);
 }
 
-document.getElementById("aRemovePhone").addEventListener("click", removePhoneNumber);
+document.getElementById("removePhone").addEventListener("click", removePhoneNumber);
 
 function removePhoneNumber(e) {
     e.preventDefault();
-    let showArray = document.getElementById("aPhoneArray");
+    let showArray = document.getElementById("phoneArray");
     showArray.innerHTML = "";
     addPhonesArray.pop();
     addPhonesArray.forEach(phone => {
@@ -208,7 +206,7 @@ document.getElementById("tbody").addEventListener("click", function(e) {
             break;
         case "edit": 
         getPerson(e);
-            editPerson(e);
+            // editPerson(e);
     }
 });
 
@@ -227,35 +225,33 @@ function deletePerson(e) {
     })
 }
 
-let editFormElems = document.getElementById("editForm").elements;
-
 function getPerson(e) {
     let count = -1;
     let phHobbies = [];
-    for (let i = 0; i < editFormElems.length; i++) {
-        editFormElems.item(i).value = "";
-    }
+    // for (let i = 0; i < editFormElems.length; i++) {
+    //     editFormElems.item(i).value = "";
+    // }
     personFacade.getPersonById(e.target.value)
     .then(person => {
-        editFormElems.namedItem("eFname").value = person.firstName;
-        editFormElems.namedItem("eLname").value = person.lastName;
-        editFormElems.namedItem("eEmail").value = person.email;
-        editFormElems.namedItem("eStreet").value = person.street;
-        editFormElems.namedItem("eCity").innerHTML += `<option id="ph${person.zipCode}" selected disabled>${person.zipCode} ${person.city}<option>`;
+        formElements.namedItem("fname").value = person.firstName;
+        formElements.namedItem("lname").value = person.lastName;
+        formElements.namedItem("email").value = person.email;
+        formElements.namedItem("street").value = person.street;
+        formElements.namedItem("city").innerHTML += `<option id="ph${person.zipCode}" selected disabled>${person.zipCode} ${person.city}<option>`;
         person.hobbies.forEach(hobby => {
             count++;
-            document.getElementById("eHobbies").innerHTML += `<option id="ph${hobby.name}" value="${hobby.name}" selected>${hobby.name}</option>`;
+            formElements.namedItem("hobbies").innerHTML += `<option id="ph${hobby.name}" value="${hobby.name}" selected>${hobby.name}</option>`;
             phHobbies[count] = `ph${hobby.name}`;
         })
-        editFormElems.namedItem("ePhone").value = person.phoneNumbers.map(phone => phone.number).join(", ");
+        formElements.namedItem("phone").value = person.phoneNumbers.map(phone => phone.number).join(", ");
         removePlaceholders(phHobbies, person.zipCode);
     })
 }
 
 
 function editPerson(e) {
-    let zipCode = editFormElems.namedItem("eCity").value.substring(0,4);
-    let city = editFormElems.namedItem("eCity").value.substring(5);
+    let zipCode = formElements.namedItem("city").value.substring(0,4);
+    let city = formElements.namedItem("city").value.substring(5);
     
     let hobbyArray = []
     for(let i=0; i< $('#hobbies').val().length;i++){
@@ -271,10 +267,10 @@ function editPerson(e) {
     // }]
     
     let person = {
-        firstName : editFormElems.namedItem("eFname").value,
-        lastName : editFormElems.namedItem("eLname").value,
-        email : editFormElems.namedItem("eEmail").value,
-        street : editFormElems.namedItem("eStreet").value,
+        firstName : formElements.namedItem("fname").value,
+        lastName : formElements.namedItem("lname").value,
+        email : formElements.namedItem("email").value,
+        street : formElements.namedItem("street").value,
         city : city,
         zipCode : zipCode,
         hobbies: hobbyArray,
@@ -307,7 +303,7 @@ function createPersonTable(data) {
         <td>${person.zipCode}</td>
         <td>${displayArray = person.hobbies.map(hobby => hobby.name).join(", ")}</td>
         <td>${displayArray = person.phoneNumbers.map(phone => phone.number).join(", ")}</td>
-        <td><button id="edit" value="${person.id}" class="btn btn-dark fa fa-pencil" aria-hidden="true" data-toggle="modal" data-target="#editModal"></button>
+        <td><button id="edit" value="${person.id}" class="btn btn-dark fa fa-pencil" aria-hidden="true" data-toggle="modal" data-target="#modal"></button>
         <button id="delete" value="${person.id}" class="btn btn-dark fa fa-trash-o" aria-hidden="true"></button></td>
         `;
     }
@@ -317,8 +313,7 @@ function getAllHobbies(){
   personFacade.getAllHobbies()
   .then(hobbies => {
         hobbies.forEach(hobby => {
-          document.getElementById("hobbies").innerHTML += `<option value="${hobby.name}">${hobby.name}</option>`;  
-          document.getElementById("eHobbies").innerHTML += `<option value="${hobby.name}">${hobby.name}</option>`;
+          formElements.namedItem("hobbies").innerHTML += `<option value="${hobby.name}">${hobby.name}</option>`;  
       })
 
     })
@@ -328,15 +323,14 @@ function getAllZipCodes() {
     zipFacade.getAllZipcodes()
     .then(cities => {
         cities.forEach(city => {
-            document.getElementById("aCity").innerHTML += 
-            `<option value="${city.zipCode} ${city.city}">${city.zipCode} ${city.city}</option>`;
-            document.getElementById("eCity").innerHTML += 
+            formElements.namedItem("city").innerHTML += 
             `<option value="${city.zipCode} ${city.city}">${city.zipCode} ${city.city}</option>`;
         })
     })
 }
 
 function printError(promise, element) {
+    console.log(promise);
     promise.fullError.then(function(error) {
         element.innerText = `${error.code} : ${error.message}`;
     })}
@@ -350,10 +344,10 @@ function removeStatusText(textElement, duration) {
 function removePlaceholders(phHobbies, zipCode) {
     let phCity = document.getElementById(`ph${zipCode}`);
     setTimeout(() => {
-        editFormElems.namedItem("eCity").removeChild(phCity);
+        formElements.namedItem("city").removeChild(phCity);
         phHobbies.forEach(id => {
             let phHobby = document.getElementById(id);
-            editFormElems.namedItem("eHobbies").removeChild(phHobby)
+            formElements.namedItem("hobbies").removeChild(phHobby)
         })
     }, 30000);
 }
