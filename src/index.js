@@ -11,12 +11,22 @@ import zipFacade from "./zipFacade"
 let status = document.getElementById("status");
 let input = document.getElementById("searchInput");
 let addPhonesArray = [];
+let phoneArray = document.getElementById("phoneArray");
+let phHobbies = [];
+let lastZip;
 let personForm = document.getElementById("personForm");
 let formElements = personForm.elements;
+let phoneElement = document.getElementById("phoneArray");
+let cityElement = formElements.namedItem("city");
+let hobbiesElement = formElements.namedItem("hobbies");
 let addError = document.getElementById("formError");
 addError.style.color = "red";
+
 document.getElementById("refresh").addEventListener("click", getAll);
 document.getElementById("submit").addEventListener("click", addPerson);
+document.getElementById("addPerson").addEventListener("click", function() {
+    clearFormFields(personForm, phoneElement, cityElement, hobbiesElement);
+});
 
 $(document).ready(function() {
     $('.hobbies').select2({
@@ -89,9 +99,6 @@ function getPersonsFromGivenCity() {
 }
 
 function addPerson() {
-    let phoneElement = document.getElementById("phoneArray");
-    let cityElement = formElements.namedItem("city");
-    let hobbiesElement = formElements.namedItem("hobbies");
     let hobbyArray = [];
       for(let i=0; i< $('#hobbies').val().length;i++){
         let hobby = {
@@ -130,6 +137,11 @@ function addPerson() {
 }
 
 function clearFormFields(form, phones, city, hobbies) {
+    if (typeof lastZip !== "undefined") {
+        if (document.getElementById(`ph${lastZip}`) !== null) {
+            removePlaceholders(phHobbies, lastZip);
+        } 
+    }
     form.reset();
     phones.innerText = "";
     city.innerHTML += '<option id="clearCity"></option>';
@@ -137,6 +149,8 @@ function clearFormFields(form, phones, city, hobbies) {
     city.removeChild(document.getElementById("clearCity"));
     hobbies.removeChild(document.getElementById("clearHobbies")); 
     addPhonesArray = [];
+    phHobbies = [];
+
 }
 
 document.getElementById("addPhone").addEventListener("click", addPhoneNumbers);
@@ -155,11 +169,11 @@ function addPhoneNumbers(e) {
         }
 
         if (work.checked) {
-            description = work.value;
+            description = work.id;
         } else if (home.checked) {
-            description = home.value;
+            description = home.id;
         } else if (other.checked) {
-            description = other.value;
+            description = other.id;
         }
 
         if (goodToGo) {
@@ -168,7 +182,7 @@ function addPhoneNumbers(e) {
             description: description
         }
         addPhonesArray.push(phone);
-        document.getElementById("phoneArray").innerHTML += `- ${phone.description}: ${phone.number}<br>`;
+        phoneArray.innerHTML += `- ${phone.description}: ${phone.number}<br>`;
         phoneNumber.value = "";
         work.checked = false;
         home.checked = false;
@@ -185,11 +199,10 @@ document.getElementById("removePhone").addEventListener("click", removePhoneNumb
 
 function removePhoneNumber(e) {
     e.preventDefault();
-    let showArray = document.getElementById("phoneArray");
-    showArray.innerHTML = "";
+    phoneArray.innerHTML = "";
     addPhonesArray.pop();
     addPhonesArray.forEach(phone => {
-        showArray.innerHTML += `- ${phone.description}: ${phone.number}<br>`;
+        phoneArray.innerHTML += `- ${phone.description}: ${phone.number}<br>`;
     })
 }
 
@@ -198,7 +211,7 @@ document.getElementById("tbody").addEventListener("click", function(e) {
         case "delete":
             deletePerson(e);
             break;
-        case "edit": 
+        case "edit":
         getPerson(e);
             // editPerson(e);
     }
@@ -220,33 +233,36 @@ function deletePerson(e) {
 }
 
 function getPerson(e) {
-    let count = -1;
-    let phHobbies = [];
-    // for (let i = 0; i < editFormElems.length; i++) {
-    //     editFormElems.item(i).value = "";
-    // }
+    phoneArray.innerHTML = "";
+    for (let i = 0; i < formElements.length; i++) {
+        formElements.item(i).value = "";
+    }
     personFacade.getPersonById(e.target.value)
     .then(person => {
         formElements.namedItem("fname").value = person.firstName;
         formElements.namedItem("lname").value = person.lastName;
         formElements.namedItem("email").value = person.email;
         formElements.namedItem("street").value = person.street;
-        formElements.namedItem("city").innerHTML += `<option id="ph${person.zipCode}" selected disabled>${person.zipCode} ${person.city}<option>`;
-        person.hobbies.forEach(hobby => {
-            count++;
-            formElements.namedItem("hobbies").innerHTML += `<option id="ph${hobby.name}" value="${hobby.name}" selected>${hobby.name}</option>`;
-            phHobbies[count] = `ph${hobby.name}`;
+        person.phoneNumbers.forEach(phone => {
+            phoneArray.innerHTML += `- ${phone.description}: ${phone.number}<br>`;
         })
-        formElements.namedItem("phone").value = person.phoneNumbers.map(phone => phone.number).join(", ");
-        removePlaceholders(phHobbies, person.zipCode);
+        formElements.namedItem("city").innerHTML += `<option id="ph${person.zipCode}" selected disabled>${person.zipCode} ${person.city}<option>`;
+        if (phHobbies.length > 0) {
+            if (document.getElementById(`ph${lastZip}`) !== null) {
+                removePlaceholders(phHobbies, lastZip);
+                phHobbies = [];
+            }
+        }
+        person.hobbies.forEach(hobby => {
+            formElements.namedItem("hobbies").innerHTML += `<option id="ph${hobby.name}" value="${hobby.name}" selected>${hobby.name}</option>`;
+            phHobbies.push(`ph${hobby.name}`);
+        })
+        lastZip = person.zipCode;
     })
 }
 
 
-function editPerson(e) {
-    let zipCode = formElements.namedItem("city").value.substring(0,4);
-    let city = formElements.namedItem("city").value.substring(5);
-    
+function editPerson(e) {  
     let hobbyArray = []
     for(let i=0; i< $('#hobbies').val().length;i++){
         let hobby = {
@@ -255,10 +271,10 @@ function editPerson(e) {
         hobbyArray[i] = hobby
     }
     
-    // let phone = [{
-    //     number : editFormElems.namedItem("ePhone").value,
-    //     description : "Work"
-    // }]
+    let cityInfo = formElements.namedItem("city").value.split(" ");
+    let zipCode = cityInfo[0];
+    cityInfo.shift();
+    let city = cityInfo.join(" ");
     
     let person = {
         firstName : formElements.namedItem("fname").value,
@@ -337,13 +353,11 @@ function removeStatusText(textElement, duration) {
     
 function removePlaceholders(phHobbies, zipCode) {
     let phCity = document.getElementById(`ph${zipCode}`);
-    setTimeout(() => {
-        formElements.namedItem("city").removeChild(phCity);
-        phHobbies.forEach(id => {
-            let phHobby = document.getElementById(id);
-            formElements.namedItem("hobbies").removeChild(phHobby)
-        })
-    }, 30000);
+    formElements.namedItem("city").removeChild(phCity);
+    phHobbies.forEach(id => {
+        let phHobby = document.getElementById(id);
+        formElements.namedItem("hobbies").removeChild(phHobby)
+    })
 }
 
 document.getElementById("searchBtn").addEventListener("click", changeCriteria);
