@@ -9,7 +9,7 @@ import zipFacade from "./zipFacade"
 
 
 let status = document.getElementById("status");
-let input = document.getElementById("searchword");
+let input = document.getElementById("searchInput");
 let addPhonesArray = [];
 let personForm = document.getElementById("personForm");
 let formElements = personForm.elements;
@@ -42,8 +42,6 @@ function getAll() {
     });
 }
 
-document.getElementById("phoneBtn").addEventListener("click", getPersonByPhone);
-
 function getPersonByPhone() {
     personFacade.getPersonByPhone(input.value)
     .then(person => {
@@ -55,8 +53,6 @@ function getPersonByPhone() {
         removeStatusText(status, 10000);
     })
 }
-
-document.getElementById("hobbyBtn").addEventListener("click", getPersonsWithGivenHobby);
 
 function getPersonsWithGivenHobby() {
     let hobby = input.value;
@@ -79,8 +75,6 @@ function getHobbyCount(input) {
         status.innerText = `There are ${amount.count} people with '${input}' as a hobby.`;
     })
 }
-
-document.getElementById("cityBtn").addEventListener("click", getPersonsFromGivenCity);
 
 function getPersonsFromGivenCity() {
     personFacade.getPersonsFromGivenCity(input.value)
@@ -350,4 +344,23 @@ function removePlaceholders(phHobbies, zipCode) {
             formElements.namedItem("hobbies").removeChild(phHobby)
         })
     }, 30000);
+}
+
+document.getElementById("searchBtn").addEventListener("click", changeCriteria);
+
+function changeCriteria() {
+    let changeCriteria = document.getElementById("criteria").selectedIndex;
+    let criteria = document.getElementsByTagName("option")[changeCriteria].value;
+    switch(criteria) {
+        case "hobby":
+            getPersonsWithGivenHobby();
+            break;
+            case "phone":
+            getPersonByPhone();
+            break;
+        case "city":
+            getPersonsFromGivenCity();
+            break;
+
+    }
 }

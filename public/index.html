@@ -12,17 +12,17 @@
 
   <div id="container" class="container">
     <div style="text-align: center; margin-top: 10px">
-      <button id="addPerson" class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#addModal"><i class="fa fa-address-card-o" aria-hidden="true"></i> Add
+      <button id="addPerson" class="btn btn-outline-dark btn-sm" data-toggle="modal" data-target="#modal"><i class="fa fa-address-card-o" aria-hidden="true"></i> Add
         User</button> <button id="refresh" class="btn btn-outline-dark btn-sm"><i class="fa fa-refresh" aria-hidden="true"></i> Refresh</button>
     </div>
     <div class="input-group mb-3" style="margin-top: 10px; padding-left: 25%; padding-right: 25%;">
       <input type="text" id="searchInput" class="form-control" placeholder="I'm looking for ...">           <!--REMEMBER TO CHANGE ID-->
       <div class="input-group-append">
-        <select class="browser-default custom-select" id="criteria">
+        <select class="browser-default custom-select btn-outline-dark" id="criteria">
           <option selected disabled>Criteria</option>
-          <option value="1">Hobby</option>
-          <option value="2">Phone</option>
-          <option value="3">City</option>
+          <option value="hobby">Hobby</option>
+          <option value="phone">Phone</option>
+          <option value="city">City</option>
         </select>
         <button id="searchBtn" class="btn btn-outline-dark">Search</button>
       </div>
@@ -30,16 +30,6 @@
     </div>
 
   <div id="content" class="content">
-    <div style="text-align: center; margin-bottom: 10px">
-      <input id="searchword" type="text" style="margin-right: 10px">
-      <button id="hobbyBtn" class="btn btn-dark btn-sm">Hobby</button>
-      <button id="phoneBtn" class="btn btn-dark btn-sm">Phone</button>
-      <button id="cityBtn" class="btn btn-dark btn-sm">City</button>
-      <button id="refresh" class="btn btn-dark btn-sm">Refresh</button>
-      <button type="button" id="addPerson" class="btn btn-dark btn-sm" data-toggle="modal" data-target="#modal">Add
-        new user</button>
-      <p id="status"></p>
-    </div>
     
     <table class="table table-hover table-bordered">
       <thead>
