@@ -85,10 +85,6 @@ function editPerson (person, id) {
     .then(handleHttpErrors)
 }
 
-
-
-
-
 function makeOptions(method, body) {
     var opts =  {
       method: method,
@@ -103,7 +99,6 @@ function makeOptions(method, body) {
     return opts;
    }
 
-
    function handleHttpErrors(res){
     if(!res.ok){
       return Promise.reject({status: res.status, fullError: res.json() })     
@@ -111,7 +106,5 @@ function makeOptions(method, body) {
     return res.json();
     
    }
-   
-   
 
-export default personFacade
+export default personFacade;
