@@ -14,7 +14,7 @@ let addPhonesArray = [];
 let phoneArray = document.getElementById("phoneArray");
 let personForm = document.getElementById("personForm");
 let formElements = personForm.elements;
-let phoneElement = document.getElementById("phoneArray");
+let submitBtn = document.getElementById("submit");
 let addError = document.getElementById("formError");
 addError.style.color = "red";
 
@@ -24,12 +24,14 @@ document.getElementById("addPhone").addEventListener("click", addPhoneNumbers);
 document.getElementById("removePhone").addEventListener("click", removePhoneNumber);
 
 document.getElementById("addPerson").addEventListener("click", function() {
-    clearFormFields(personForm, phoneElement);
-    document.getElementById("submit").innerText = "Add";
+    if (submitBtn.innerText === "Edit") {
+        clearFormFields();
+        submitBtn.innerText = "Add";
+    }
 });
 
-document.getElementById("submit").addEventListener("click", function(e) {
-    switch(document.getElementById("submit").innerText) {
+submitBtn.addEventListener("click", function(e) {
+    switch(submitBtn.innerText) {
         case "Add":
             addPerson();
             break;
@@ -153,6 +155,7 @@ function getAllZipCodes() {
 }
 
 function addPerson() {
+    status.style.color = "red";
     let hobbyArray = [];
     for(let i=0; i< $('#hobbies').val().length;i++){
         let hobby = {
@@ -176,18 +179,21 @@ function addPerson() {
         hobbies : hobbyArray,
         phoneNumbers : addPhonesArray
     }
-    
+
+    if (!person.email.includes("@")) {
+        status.innerText = "The email must contain an @ sign.";
+    } else {
     personFacade.addPerson(person)
     .then(person => {
         status.style.color = "green";
         status.innerText = `${person.firstName} ${person.lastName} (ID: ${person.id}) has been added.`
-        clearFormFields(personForm, phoneElement);
+        clearFormFields();
         getAll();
     })
     .catch(e => {
-        status.style.color = "red";
         printError(e, status)
     });
+    }
     removeStatusText(status, 10000);
 }
 
@@ -229,6 +235,7 @@ function getPerson(e) {
 }
 
 function editPerson(e) {  
+    status.style.color = "red";
     let hobbyArray = [];
       for(let i=0; i< $('#hobbies').val().length;i++){
         let hobby = {
@@ -253,6 +260,10 @@ function editPerson(e) {
       phoneNumbers : addPhonesArray
     }
 
+    if (!person.email.includes("@")) {
+        status.innerText = "The email must contain an @ sign.";
+    } else {
+
     personFacade.editPerson(person, e.target.value)
     .then(person => {
         status.style.color = "green";
@@ -260,9 +271,9 @@ function editPerson(e) {
         getAll();
     })
     .catch(e => {
-        status.style.color = "red";
         printError(e, status)
     })
+    }
     removeStatusText(status, 10000);
 }
 
@@ -275,7 +286,7 @@ function addPhoneNumbers(e) {
     let description;
     let goodToGo = false;
 
-        if (phoneNumber.value.length >= 5) {
+        if (phoneNumber.value.length >= 8) {
             goodToGo = true;
         }
 
@@ -299,7 +310,7 @@ function addPhoneNumbers(e) {
         home.checked = false;
         other.checked = false;
     } else {
-        addError.innerText = "The phone number must consist of at least 5 characters.";
+        addError.innerText = "The phone number must consist of at least 8 characters.";
     } 
     setTimeout(() => {
         addError.innerText = "";
@@ -315,12 +326,12 @@ function removePhoneNumber(e) {
     })
 }
 
-function clearFormFields(form, phones) {
-    form.reset();
+function clearFormFields() {
+    personForm.reset();
     $('.hobbies').val('').trigger('change');
     $('.city').val('').trigger('change'); 
     addPhonesArray = [];
-    phones.innerText = "";
+    phoneArray.innerText = "";
 }
 
 function printError(promise, element) {
