@@ -1,8 +1,6 @@
-const URL = "https://bencat.dk/bornit-ca2/api/persons/"
-
+import SERVER_URL from './constants';
 
 const personFacade = {
-
     getAllPersons,
     getPersonByPhone,
     getHobbyCount,
@@ -13,75 +11,72 @@ const personFacade = {
     getAllHobbies,
     getPersonById,
     editPerson
-
-
-
 }
 
 function getAllPersons (){
     const options = makeOptions("GET")
-    return fetch(URL, options)
+    return fetch(SERVER_URL, options)
     .then(handleHttpErrors)
     
 }
 
 function getPersonByPhone (phone){
     const options = makeOptions("GET")
-    return fetch(URL+"phone/"+phone)
+    return fetch(SERVER_URL+"phone/"+phone)
     .then(handleHttpErrors)
 
 }
 
 function getHobbyCount(hobby){
     const options = makeOptions("GET")
-    return fetch(URL+"count/"+hobby)
+    return fetch(SERVER_URL+"count/"+hobby)
     .then(handleHttpErrors)
 
 }
 
 function getPersonsWithGivenHobby(hobby){
     const options = makeOptions("GET")
-    return fetch(URL+"hobby/"+hobby)
+    return fetch(SERVER_URL+"hobby/"+hobby)
     .then(handleHttpErrors)
 }
 
 function getPersonsFromGivenCity(city){
     const options = makeOptions("GET")
-    return fetch(URL+"city/"+city)
+    return fetch(SERVER_URL+"city/"+city)
     .then(handleHttpErrors)
 
 }
 
 function addPerson (person){
     const options = makeOptions("POST",person)
-    return fetch(URL,options)
+    return fetch(SERVER_URL,options)
     .then(handleHttpErrors)
 
 }
 
 function deletePerson(id){
     const options = makeOptions("DELETE")
-    return fetch(URL+id, options)
+    return fetch(SERVER_URL+id, options)
     .then(handleHttpErrors)
 
 }
 
 function getAllHobbies () {
     const options = makeOptions("GET")
-    return fetch(URL+"hobbies")
+    return fetch(SERVER_URL+"hobbies")
     .then(handleHttpErrors)
     
 }
 
 function getPersonById(id){
     const options = makeOptions("GET")
-    return fetch(URL+"id/"+id)
+    return fetch(SERVER_URL+"id/"+id)
     .then(handleHttpErrors)
 }
 
 function editPerson (person, id) {
     const options = makeOptions("PUT", person)
-    return fetch(URL+id, options)
+    return fetch(SERVER_URL+id, options)
     .then(handleHttpErrors)
 }
 
