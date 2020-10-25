@@ -349,18 +349,26 @@ function removeStatusText(textElement, duration) {
 function changeCriteria() {
     let changeCriteria = document.getElementById("criteria").selectedIndex;
     let criteria = document.getElementsByTagName("option")[changeCriteria].value;
+    
+    if (input.value.length < 1){
+        status.style.color="red"
+        status.innerHTML = "Input field cannot be empty!"
+        removeStatusText(status,10000)
+    }else{
+    
     switch(criteria) {
         case "hobby":
             getPersonsWithGivenHobby();
             break;
             case "phone":
-                getPersonByPhone();
+            getPersonByPhone();
             break;
             case "city":
-                getPersonsFromGivenCity();
+            getPersonsFromGivenCity();
             break;
             
         }
+    }
     }
 function createPersonTable(data) {
     let personRows;
